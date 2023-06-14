@@ -422,28 +422,18 @@ namespace SortImageToFolders
         // перевернуть LinearLayout
         void FlipLinearLayout(LinearLayout linearLayout)
         {
-            linearLayout.RemoveAllViews();
             int childCount = linearLayout.ChildCount;
-            for (int i = childCount - 1; i >= 0; i--)
+            View[] children = new View[childCount];
+            for (int i = 0; i < childCount; i++)
             {
-                View child = linearLayout.GetChildAt(i);
-                linearLayout.AddView(child);
+                children[i] = linearLayout.GetChildAt(i);
             }
+            linearLayout.RemoveAllViews();
 
-            //int childCount = linearLayout.ChildCount;
-            //View[] children = new View[childCount];
-            //for (int i = 0; i < childCount; i++)
-            //{
-            //    children[i] = linearLayout.GetChildAt(i);
-            //}
-            //linearLayout.RemoveAllViews();
-
-            //Array.Sort(children, (x, y) => x.Id.CompareTo(y.Id));
-
-            //for (int i = 0; i < childCount; i++)
-            //{
-            //    linearLayout.AddView(children[childCount - 1 - i]);
-            //}
+            for (int i = 0; i < childCount; i++)
+            {
+                linearLayout.AddView(children[childCount - 1 - i]);
+            }
         }
 
         // перевернуть список изображений

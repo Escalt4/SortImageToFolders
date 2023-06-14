@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app= "http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:id="@+id/linearLayoutMain"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <ImageView
+                android:id="@+id/imageView"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:contentDescription="" >
+
+            </ImageView>
+
+            <TextView
+                android:id="@+id/textViewSplashScreen"
+                android:visibility="visible"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:padding="25dp"
+                android:text=""
+                android:textSize="24sp">
+
+            </TextView>
+        </LinearLayout>
+
+        <LinearLayout      
+            android:id="@+id/linearLayoutPanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:gravity="bottom"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textViewProgress"
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:gravity="center"
+                    android:text="0000/0000"
+                    android:textSize="16sp">
+
+                </TextView>
+
+                <Button
+                    android:id="@+id/buttonToA"
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:layout_weight="1"
+                    android:insetLeft="6dp"
+                    android:insetRight="6dp"
+                    android:onClick="MyOnClick"
+                    android:text="To A"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    app:cornerRadius="999dp" />
+
+                <Button
+                    android:id="@+id/buttonToB"
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:layout_weight="1"
+                    android:insetLeft="6dp"
+                    android:insetRight="6dp"
+                    android:onClick="MyOnClick"
+                    android:text="To B"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    app:cornerRadius="999dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/buttonToMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:layout_weight="1"
+                    android:insetLeft="6dp"
+                    android:insetRight="6dp"
+                    android:onClick="MyOnClick"
+                    android:text="..."
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    app:cornerRadius="999dp" />
+
+                <Button
+                    android:id="@+id/buttonUndo"
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:layout_weight="1"
+                    android:insetLeft="6dp"
+                    android:insetRight="6dp"
+                    android:onClick="MyOnClick"
+                    android:text="Undo"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    app:cornerRadius="999dp" />
+
+                <Button
+                    android:id="@+id/buttonDel"
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:layout_weight="1"
+                    android:insetLeft="6dp"
+                    android:insetRight="6dp"
+                    android:onClick="MyOnClick"
+                    android:text="Del"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    app:cornerRadius="999dp" />
+
+                <Button
+                    android:id="@+id/buttonSkip"
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:layout_weight="1"
+                    android:insetLeft="6dp"
+                    android:insetRight="6dp"
+                    android:onClick="MyOnClick"
+                    android:text="Skip"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    app:cornerRadius="999dp"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout     
+            android:id="@+id/linearLayoutPanel2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:gravity="bottom"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="75dp"
+                android:orientation="horizontal">
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/buttonExitMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:layout_weight="1"
+                    android:insetLeft="6dp"
+                    android:insetRight="6dp"
+                    android:onClick="MyOnClick"
+                    android:text="..."
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    app:cornerRadius="999dp" />
+
+                <Button
+                    android:id="@+id/buttonInvertUI"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:insetLeft="6dp"
+                    android:insetRight="6dp"
+                    android:onClick="MyOnClick"
+                    android:text="Inv UI"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    app:cornerRadius="999dp" />
+
+                <Button
+                    android:id="@+id/buttonReverseImageList"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:insetLeft="6dp"
+                    android:insetRight="6dp"
+                    android:onClick="MyOnClick"
+                    android:text="Rev Img"
+                    android:gravity="center"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    app:cornerRadius="999dp" />
+
+                <Button
+                    android:id="@+id/buttonApplyChanges"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:insetLeft="6dp"
+                    android:insetRight="6dp"
+                    android:onClick="MyOnClick"
+                    android:text="Apply"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    app:cornerRadius="999dp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

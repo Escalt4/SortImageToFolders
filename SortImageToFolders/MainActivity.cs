@@ -2,17 +2,13 @@
 using Android.Content;
 using Android.Content.PM;
 using Android.Graphics;
-using Android.Net;
 using Android.OS;
-using Android.Preferences;
-using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using AndroidX.AppCompat.App;
-using AndroidX.Core.App;
-using AndroidX.Core.Content;
 using Java.Interop;
 using Java.Lang;
+using Java.Util;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -21,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace SortImageToFolders
 {
-    [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
+    [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation, ScreenOrientation = ScreenOrientation.Portrait)]
     public class MainActivity : AppCompatActivity
     {
         private const int RequestAllFilesAccess = 1;
@@ -71,7 +67,7 @@ namespace SortImageToFolders
                 if (Environment.IsExternalStorageManager)
                 {
                     // Доступ ко всем файлам был предоставлен
-                    _ = InitApp();
+                    InitApp();
                 }
                 else
                 {
@@ -115,12 +111,12 @@ namespace SortImageToFolders
             }
             else
             {
-                _ = InitApp();
+                InitApp();
             }
         }
 
         // инициализация приложения
-        async Task InitApp()
+        async void InitApp()
         {
             // получаем ширину экрана для маштабирования слишком больших изображений
             screenWidth = Resources.DisplayMetrics.WidthPixels;
@@ -254,7 +250,7 @@ namespace SortImageToFolders
 
         // обработка нажатия на кнопки 
         [Export("MyOnClick")]
-        public void MyOnClick(View view)
+        public async void MyOnClick(View view)
         {
             switch (view.Id)
             {
@@ -301,7 +297,7 @@ namespace SortImageToFolders
                     break;
 
                 case Resource.Id.buttonApplyChanges:
-                    ApplyChanges();
+                    await ApplyChangesAsync();
                     linearLayoutPanel2.Visibility = ViewStates.Gone;
                     linearLayoutPanel.Visibility = ViewStates.Visible;
                     break;
@@ -317,20 +313,15 @@ namespace SortImageToFolders
                 imageList[curImageIndex].Status = status;
             }
 
-            if (status == 0)
+            if (status == 0 && curImageIndex > 0)
             {
-                if (curImageIndex > 0)
-                {
-                    curImageIndex -= 1;
-                }
+                curImageIndex--;
             }
-            else
+            else if (curImageIndex < imageList.Count)
             {
-                if (curImageIndex < imageList.Count)
-                {
-                    curImageIndex += 1;
-                }
+                curImageIndex++;
             }
+
             ShowNextImage();
         }
 
@@ -339,14 +330,19 @@ namespace SortImageToFolders
         {
             textViewProgress.Text = $"Просмотрено:\n{curImageIndex}/{imageList.Count}";
 
-            if (curImageIndex == 0)
+            if (imageList.Count == 0)
             {
                 buttonApplyChanges.Enabled = false;
                 buttonUndo.Enabled = false;
-                buttonDel.Enabled = true;
-                buttonSkip.Enabled = true;
-                buttonToA.Enabled = true;
-                buttonToB.Enabled = true;
+                buttonDel.Enabled = false;
+                buttonSkip.Enabled = false;
+                buttonToA.Enabled = false;
+                buttonToB.Enabled = false;
+
+                textViewSplashScreen.Text = "Нет изображений";
+                imageView.Visibility = ViewStates.Gone;
+                textViewSplashScreen.Visibility = ViewStates.Visible;
+
             }
             else if (curImageIndex == imageList.Count)
             {
@@ -356,19 +352,32 @@ namespace SortImageToFolders
                 buttonSkip.Enabled = false;
                 buttonToA.Enabled = false;
                 buttonToB.Enabled = false;
+
+                textViewSplashScreen.Text = "Все изображения просмотрены";
+                imageView.Visibility = ViewStates.Gone;
+                textViewSplashScreen.Visibility = ViewStates.Visible;
             }
             else
             {
-                buttonApplyChanges.Enabled = true;
-                buttonUndo.Enabled = true;
-                buttonDel.Enabled = true;
-                buttonSkip.Enabled = true;
-                buttonToA.Enabled = true;
-                buttonToB.Enabled = true;
-            }
+                if (curImageIndex == 0)
+                {
+                    buttonApplyChanges.Enabled = false;
+                    buttonUndo.Enabled = false;
+                    buttonDel.Enabled = true;
+                    buttonSkip.Enabled = true;
+                    buttonToA.Enabled = true;
+                    buttonToB.Enabled = true;
+                }
+                else if (curImageIndex != imageList.Count)
+                {
+                    buttonApplyChanges.Enabled = true;
+                    buttonUndo.Enabled = true;
+                    buttonDel.Enabled = true;
+                    buttonSkip.Enabled = true;
+                    buttonToA.Enabled = true;
+                    buttonToB.Enabled = true;
+                }
 
-            if (curImageIndex < imageList.Count)
-            {
                 textViewSplashScreen.Visibility = ViewStates.Gone;
                 imageView.Visibility = ViewStates.Visible;
 
@@ -383,12 +392,6 @@ namespace SortImageToFolders
                 }
 
                 imageView.SetImageBitmap(image);
-            }
-            else if (curImageIndex == imageList.Count)
-            {
-                textViewSplashScreen.Text = "Все изображения просмотрены";
-                imageView.Visibility = ViewStates.Gone;
-                textViewSplashScreen.Visibility = ViewStates.Visible;
             }
         }
 
@@ -449,62 +452,73 @@ namespace SortImageToFolders
         }
 
         // применить изменения к изображениям
-        void ApplyChanges()
+        async Task ApplyChangesAsync()
         {
             linearLayoutPanel.Visibility = ViewStates.Gone;
+            linearLayoutPanel2.Visibility = ViewStates.Gone;
             imageView.Visibility = ViewStates.Gone;
             textViewSplashScreen.Visibility = ViewStates.Visible;
             textViewSplashScreen.Text = "Применение выбранных действий";
 
-            ImageData temp = imageList[curImageIndex];
-
-            int i = imageList.Count - 1;
-            while (i >= 0)
+            ImageData curImage = null;
+            if (curImageIndex < imageList.Count)
             {
-                switch (imageList[i].Status)
-                {
-                    case 11:
-                        File.Copy(imageList[i].ImagePath, pathA + "/" + imageList[i].ImageName);
-                        File.Delete(imageList[i].ImagePath);
-                        imageList.RemoveAt(i);
-                        break;
-
-                    case 12:
-                        File.Copy(imageList[i].ImagePath, pathB + "/" + imageList[i].ImageName);
-                        File.Delete(imageList[i].ImagePath);
-                        imageList.RemoveAt(i);
-                        break;
-
-                    case 2:
-                        File.Delete(imageList[i].ImagePath);
-                        imageList.RemoveAt(i);
-                        break;
-                }
-                i--;
+                curImage = imageList[curImageIndex];
             }
+
+            await Task.Run(() =>
+            {
+                Parallel.ForEach(imageList, image =>
+                {
+                    switch (image.Status)
+                    {
+                        case 11:
+                            File.Copy(image.ImagePath, pathA + "/" + image.ImageName);
+                            File.Delete(image.ImagePath);
+                            break;
+
+                        case 12:
+                            File.Copy(image.ImagePath, pathB + "/" + image.ImageName);
+                            File.Delete(image.ImagePath);
+                            break;
+
+                        case 2:
+                            File.Delete(image.ImagePath);
+                            break;
+                    }
+                });
+
+                imageList.RemoveAll(obj => obj.Status == 11 || obj.Status == 12 || obj.Status == 2);
+            });
 
             if (imageList.Count == 0)
             {
                 linearLayoutPanel.Visibility = ViewStates.Gone;
+                linearLayoutPanel2.Visibility = ViewStates.Gone;
                 imageView.Visibility = ViewStates.Gone;
                 textViewSplashScreen.Visibility = ViewStates.Visible;
-                textViewSplashScreen.Text = "Все открытые изображения были обработаны";
+                textViewSplashScreen.Text = "Все изображения были обработаны";
             }
             else
             {
+                if (curImage is null)
+                {
+                    curImageIndex = imageList.Count - 1;
+                }
+                else
+                {
+                    curImageIndex = imageList.IndexOf(curImage);
+                }
+
+                linearLayoutPanel2.Visibility = ViewStates.Gone;
                 textViewSplashScreen.Visibility = ViewStates.Gone;
                 linearLayoutPanel.Visibility = ViewStates.Visible;
                 imageView.Visibility = ViewStates.Visible;
 
-                curImageIndex = imageList.IndexOf(temp);
-                if (curImageIndex == -1)
-                {
-                    curImageIndex = imageList.Count - 1;
-                }
                 ShowNextImage();
             }
 
-            textViewProgress.Text = $"{curImageIndex + 1}/{imageList.Count}";
+            textViewProgress.Text = $"Просмотрено:\n{curImageIndex}/{imageList.Count}";
         }
     }
 }
